@@ -1,0 +1,15 @@
+Scala Code (Correlation between case count and subway ridership and case count and buses for all of COVID)
+
+var casesAll = spark.read.format("csv").option("header", "true").load("final/spark/all/input/allCases.csv")
+var mtaAll = spark.read.format("csv").option("header", "true").load("final/spark/all/input/MTAAll.csv")
+mtaAll = mtaAll.withColumnRenamed("date", "DATE_OF_INTEREST")
+casesAll = casesAll.join(mtaAll, "DATE_OF_INTEREST")
+casesAll = casesAll.withColumnRenamed("CASE_COUNT ", "CASE_COUNT")
+casesAll = casesAll.withColumnRenamed(" Subways", "Subways")
+casesAll = casesAll.withColumnRenamed("Buses      ", "Buses")
+casesAll = casesAll.withColumn("CASE_COUNT", col("CASE_COUNT").cast("double"))
+casesAll.withColumn("Subways", col("Subways").cast("double"))
+casesAll = casesAll.withColumn("Buses", col("Buses").cast("double"))
+casesAll.stat.corr("CASE_COUNT", "Subways")
+casesAll.stat.corr("CASE_COUNT", "Buses")
+
